@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        #display{
+            display: grid;
+            grid-template-columns: repeat(3, 33%);
+            grid-gap: 20px;
+            margin-left: 5%;
+        }
+
+        img{
+            width: 80%;
+            height: 60%;
+        }
+    </style>
+</head>
+<body>
+    <button><a href="cart.html">Go to cart</a></button>
+    <div id="display"></div>
+</body>
+</html>
+
+<script>
+    
+    async function getDishes(){
+        let res = await fetch("https://www.themealdb.com/api/json/v1/1/search.php?f=c");
+        let data = await res.json();
+        console.log(data.meals);
+        displayDishes(data.meals);
+    }
+
+    getDishes();
+
+    let display = document.getElementById("display");
+
+    function displayDishes(meals){
+
+        meals.forEach(({ strMeal, strMealThumb})=>{
+            let div = document.createElement("div");
+            let img = document.createElement("img");
+            let title = document.createElement("p");
+            let addToCart = document.createElement("button")
+
+            img.src = strMealThumb;
+            title.innerText = strMeal;
+            addToCart.innerHTML = "Add to cart";
+
+            addToCart.onclick = function (){
+                addtocart({strMeal, strMealThumb});
+            }
+
+            div.append(img, title, addToCart);
+            display.append(div);
+
+            
+        });
+    }
+
+    if(localStorage.getItem("cart") === null)
+    {
+        localStorage.setItem("cart", JSON.stringify([]));
+    }
+
+    function addtocart(meal){
+        let cart = JSON.parse(localStorage.getItem("cart"));
+
+        cart.push(meal);
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        console.log(cart);
+    }
+</script>
